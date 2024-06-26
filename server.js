@@ -41,6 +41,16 @@ app.listen(port, () => {
   }
 });
 
+app.get('/post-sign-in', (req, res) => {
+  console.log('Serving post-sign-in.html');
+  res.sendFile(path.join(__dirname, 'post-sign-in.html'), (err) => {
+    if (err) {
+      console.log('Error serving post-sign-in.html:', err);
+      res.status(404).send('File not found');
+    }
+  });
+});
+
 // Handle dynamic form submission
 app.post('/dynamic-sign-in', async (req, res) => {
   const { firstName, lastName, company, additionalData } = req.body;
