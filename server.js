@@ -3,12 +3,12 @@ const bodyParser = require('body-parser');
 const { createClient } = require('@supabase/supabase-js');
 const path = require('path');
 
-const app = express();
-
 // Initialize Supabase client
-const supabaseUrl = 'https://zskacxgupskbhdrfaapm.supabase.co';
-const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpza2FjeGd1cHNrYmhkcmZhYXBtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTk0MjAzMDIsImV4cCI6MjAzNDk5NjMwMn0.CHP3qlJFXi8U0S55rtJzMxcLHO-gf32x6zwg-ucX3Qc';
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_KEY;
 const supabase = createClient(supabaseUrl, supabaseKey);
+
+const app = express();
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname)));
@@ -28,23 +28,25 @@ async function initializeDatabase() {
 
 initializeDatabase();
 
-// Original authentication logic
-app.post('/signin', (req, res) => {
+// Handle sign-in form submission
+app.post('/signin', async (req, res) => {
   const { username, password } = req.body;
-  // Implement your actual authentication logic here
-  // Example: check username and password against a database
-  if (isValidUser(username, password)) {
+
+  // Check credentials against the users table
+  const { data, error } = await supabase
+    .from('users')
+    .select('*')
+    .eq('username', username)
+    .eq('password', password);
+
+  if (data && data.length > 0) {
+    // Authentication successful
     res.redirect('/post-sign-in');
   } else {
+    // Authentication failed
     res.status(401).send('Unauthorized');
   }
 });
-
-function isValidUser(username, password) {
-  // Replace this with your actual authentication logic
-  return username === 'testuser' && password === 'testpassword';
-}
-
 
 // Handle dynamic form submission
 app.post('/dynamic-sign-in', async (req, res) => {
