@@ -6,8 +6,8 @@ const path = require('path');
 const app = express();
 
 // Initialize Supabase client
-const supabaseUrl = 'https://your-project.supabase.co';
-const supabaseKey = 'your-anon-key';
+const supabaseUrl = 'https://zskacxgupskbhdrfaapm.supabase.co';
+const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpza2FjeGd1cHNrYmhkcmZhYXBtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MTk0MjAzMDIsImV4cCI6MjAzNDk5NjMwMn0.CHP3qlJFXi8U0S55rtJzMxcLHO-gf32x6zwg-ucX3Qc';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 app.use(bodyParser.urlencoded({ extended: true }));
