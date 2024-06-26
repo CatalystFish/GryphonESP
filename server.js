@@ -13,24 +13,10 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname)));
 
-// Initialize database
-async function initializeDatabase() {
-  const { data, error } = await supabase
-    .from('signins')
-    .select('*');
-
-  if (error) {
-    console.error('Error fetching table:', error);
-  } else {
-    console.log('Table fetched or already exists.');
-  }
-}
-
-initializeDatabase();
-
 // Handle sign-in form submission
 app.post('/signin', async (req, res) => {
   const { username, password } = req.body;
+  console.log('Received sign-in request:', { username, password });
 
   // Check credentials against the users table
   const { data, error } = await supabase
@@ -39,11 +25,13 @@ app.post('/signin', async (req, res) => {
     .eq('username', username)
     .eq('password', password);
 
+  console.log('Supabase query result:', { data, error });
+
   if (data && data.length > 0) {
-    // Authentication successful
+    console.log('Authentication successful');
     res.redirect('/post-sign-in');
   } else {
-    // Authentication failed
+    console.log('Authentication failed');
     res.status(401).send('Unauthorized');
   }
 });
@@ -77,6 +65,11 @@ app.post('/signout', async (req, res) => {
   } else {
     res.redirect('/post-sign-in');
   }
+});
+
+// Serve post-sign-in page
+app.get('/post-sign-in', (req, res) => {
+  res.sendFile(path.join(__dirname, 'post-sign-in.html'));
 });
 
 // Start the server
