@@ -51,6 +51,39 @@ app.post('/dynamic-sign-in', async (req, res) => {
   }
 });
 
+app.post('/signin', async (req, res) => {
+  const { username, password } = req.body;
+  console.log('Received sign-in request:', { username, password });
+
+  // Check credentials against the users table
+  const { data, error } = await supabase
+    .from('users')
+    .select('*')
+    .eq('username', username)
+    .eq('password', password);
+
+  console.log('Supabase query result:', { data, error });
+
+  if (data && data.length > 0) {
+    console.log('Authentication successful');
+    res.redirect('/post-sign-in');
+  } else {
+    console.log('Authentication failed');
+    res.status(401).send('Unauthorized');
+  }
+});
+
+app.get('/post-sign-in', (req, res) => {
+  console.log('Serving post-sign-in.html');
+  res.sendFile(path.join(__dirname, 'post-sign-in.html'), (err) => {
+    if (err) {
+      console.log('Error serving post-sign-in.html:', err);
+      res.status(404).send('File not found');
+    }
+  });
+});
+
+
 // Handle sign-out
 app.post('/signout', async (req, res) => {
   const { id } = req.body;
