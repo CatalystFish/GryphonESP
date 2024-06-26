@@ -14,14 +14,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname)));  // Serve static files from the root
 
 // Handle sign-in form submission
-app.post('/signin', async (req, res) => {
-  const { username, password } = req.body;
-  console.log('Received sign-in request:', { username, password });
-
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
-  console.log(`Server running on http://localhost:${port}`);
-});  
+  app.post('/signin', async (req, res) => {
+    const { username, password } = req.body;
+    console.log('Received sign-in request:', { username, password });
 
   // Check credentials against the users table
   const { data, error } = await supabase
