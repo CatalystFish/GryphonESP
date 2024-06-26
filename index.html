@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Gryphon ESP Safety Sign-In</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <img src="logo.png" alt="Gryphon ESP Logo">
+    <nav>
+      <a href="#">Home</a>
+      <a href="#">About</a>
+      <a href="#">Contact</a>
+    </nav>
+  </header>
+
+  <main id="sign-in-page">
+    <form id="sign-in-form">
+      <h2>Sign In</h2>
+      <label for="username">Username</label>
+      <input type="text" id="username" name="username" required>
+      
+      <label for="password">Password</label>
+      <input type="password" id="password" name="password" required>
+      
+      <button type="submit">Sign In</button>
+    </form>
+  </main>
+
+  <main id="post-sign-in-page" style="display:none;">
+    <h2>Select Company</h2>
+    <select id="company-selection">
+      <option value="Repsol">Repsol</option>
+      <option value="Rosewood">Rosewood</option>
+      <option value="Crimson">Crimson</option>
+      <option value="XTO">XTO</option>
+      <option value="BPX">BPX</option>
+      <option value="Javelin">Javelin</option>
+      <option value="Xarvona">Xarvona</option>
+    </select>
+    
+    <form id="dynamic-sign-in-form">
+      <h2>Sign In Details</h2>
+      <label for="first-name">First Name</label>
+      <input type="text" id="first-name" name="first-name" required>
+      
+      <label for="last-name">Last Name</label>
+      <input type="text" id="last-name" name="last-name" required>
+      
+      <label for="company">Company</label>
+      <select id="entrant-company">
+        <option value="Repsol">Repsol</option>
+        <option value="Rosewood">Rosewood</option>
+        <option value="Crimson">Crimson</option>
+        <option value="XTO">XTO</option>
+        <option value="BPX">BPX</option>
+        <option value="Javelin">Javelin</option>
+        <option value="Xarvona">Xarvona</option>
+      </select>
+      
+      <div id="additional-fields"></div>
+      
+      <button type="submit">Sign In</button>
+    </form>
+    
+    <button id="sign-out-button">Sign Out</button>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
