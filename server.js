@@ -28,16 +28,11 @@ async function initializeDatabase() {
 
 initializeDatabase();
 
-// Simple test login mechanism
 app.post('/signin', (req, res) => {
-  const { username, password } = req.body;
-  // For testing, accept any username and password
-  if (username && password) {
-    res.redirect('/post-sign-in');
-  } else {
-    res.status(401).send('Unauthorized');
-  }
+  // Temporarily bypass authentication for testing
+  res.redirect('/post-sign-in');
 });
+
 
 // Handle dynamic form submission
 app.post('/dynamic-sign-in', async (req, res) => {
