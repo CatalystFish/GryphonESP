@@ -17,7 +17,11 @@ app.use(express.static(path.join(__dirname)));  // Serve static files from the r
 app.post('/signin', async (req, res) => {
   const { username, password } = req.body;
   console.log('Received sign-in request:', { username, password });
-  
+
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log(`Server running on http://localhost:${port}`);
+});  
 
   // Check credentials against the users table
   const { data, error } = await supabase
