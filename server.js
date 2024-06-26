@@ -28,10 +28,22 @@ async function initializeDatabase() {
 
 initializeDatabase();
 
+// Original authentication logic
 app.post('/signin', (req, res) => {
-  // Temporarily bypass authentication for testing
-  res.redirect('/post-sign-in');
+  const { username, password } = req.body;
+  // Implement your actual authentication logic here
+  // Example: check username and password against a database
+  if (isValidUser(username, password)) {
+    res.redirect('/post-sign-in');
+  } else {
+    res.status(401).send('Unauthorized');
+  }
 });
+
+function isValidUser(username, password) {
+  // Replace this with your actual authentication logic
+  return username === 'testuser' && password === 'testpassword';
+}
 
 
 // Handle dynamic form submission
