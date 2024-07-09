@@ -98,6 +98,69 @@ app.get('/post-sign-in', (req, res) => {
   });
 });
 
+// Serve view all users page
+app.get('/view-users', async (req, res) => {
+  try {
+    const { data, error } = await supabase
+      .from('signins')
+      .select('*');
+
+    if (error) {
+      throw error;
+    }
+
+    res.json(data);
+  } catch (error) {
+    console.error('Error retrieving users:', error);
+    res.status(500).send('Error retrieving users: ' + error.message);
+  }
+});
+
+// Serve daily report page
+app.get('/daily-report', async (req, res) => {
+  const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+  try {
+    const { data, error } = await supabase
+      .from('signins')
+      .select('*')
+      .gte('signInTime', `${today}T00:00:00`)
+      .lt('signInTime', `${today}T23:59:59`);
+
+    if (error) {
+      throw error;
+    }
+
+    res.json(data);
+  } catch (error) {
+    console.error('Error generating daily report:', error);
+    res.status(500).send('Error generating daily report: ' + error.message);
+  }
+});
+
+// Handle sign-out with one click
+app.post('/signout-user', async (req, res) => {
+  const { id } = req.body;
+  console.log('Received sign-out request:', { id });
+
+  try {
+    const { data, error } = await supabase
+      .from('signins')
+      .update({ signOutTime: new Date() })
+      .eq('id', id);
+
+    if (error) {
+      throw error;
+    }
+
+    console.log('Updated signout time:', data);
+    res.redirect('/view-users');
+  } catch (error) {
+    console.error('Error updating signout time:', error);
+    res.status(500).send('Error updating signout time: ' + error.message);
+  }
+});
+
+
 // Handle sign-out
 app.post('/signout', async (req, res) => {
   const { id } = req.body;
