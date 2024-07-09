@@ -98,44 +98,28 @@ app.get('/post-sign-in', (req, res) => {
   });
 });
 
-// Serve view all users page
-app.get('/view-users', async (req, res) => {
-  try {
-    const { data, error } = await supabase
-      .from('signins')
-      .select('*');
-
-    if (error) {
-      throw error;
+// Serve view users page
+app.get('/view-users-page', (req, res) => {
+  console.log('Serving view-users.html');
+  res.sendFile(path.join(__dirname, 'view-users.html'), (err) => {
+    if (err) {
+      console.log('Error serving view-users.html:', err);
+      res.status(404).send('File not found');
     }
-
-    res.json(data);
-  } catch (error) {
-    console.error('Error retrieving users:', error);
-    res.status(500).send('Error retrieving users: ' + error.message);
-  }
+  });
 });
 
 // Serve daily report page
-app.get('/daily-report', async (req, res) => {
-  const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
-  try {
-    const { data, error } = await supabase
-      .from('signins')
-      .select('*')
-      .gte('signInTime', `${today}T00:00:00`)
-      .lt('signInTime', `${today}T23:59:59`);
-
-    if (error) {
-      throw error;
+app.get('/daily-report-page', (req, res) => {
+  console.log('Serving daily-report.html');
+  res.sendFile(path.join(__dirname, 'daily-report.html'), (err) => {
+    if (err) {
+      console.log('Error serving daily-report.html:', err);
+      res.status(404).send('File not found');
     }
-
-    res.json(data);
-  } catch (error) {
-    console.error('Error generating daily report:', error);
-    res.status(500).send('Error generating daily report: ' + error.message);
-  }
+  });
 });
+
 
 // Handle sign-out with one click
 app.post('/signout-user', async (req, res) => {
