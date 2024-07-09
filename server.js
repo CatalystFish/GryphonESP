@@ -99,7 +99,7 @@ app.post('/visitor-signin', checkAuth, async (req, res) => {
     }
 
     console.log('Inserted data into signins:', data);
-    res.redirect('/post-sign-in');
+    res.redirect('/choose-company');
   } catch (error) {
     console.error('Error inserting data:', error);
     res.status(500).send('Error inserting data: ' + error.message);
