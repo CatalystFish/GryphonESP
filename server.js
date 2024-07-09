@@ -34,16 +34,6 @@ function checkAuth(req, res, next) {
   }
 }
 
-// Serve about page
-app.get('/about', (req, res) => {
-  res.sendFile(path.join(__dirname, 'about.html'));
-});
-
-// Serve contact page
-app.get('/contact', (req, res) => {
-  res.sendFile(path.join(__dirname, 'contact.html'));
-});
-
 // Handle sign-in form submission
 app.post('/signin', async (req, res) => {
   const { username, password } = req.body;
@@ -200,9 +190,7 @@ app.get('/daily-report', checkAuth, async (req, res) => {
 // Handle sign-out with one click
 app.post('/signout-user', checkAuth, async (req, res) => {
   const { id } = req.body;
-  const signOutTime = new Date().toISOString();
   console.log('Received sign-out request:', { id });
-  console.log('Formatted signOutTime:', signOutTime);
 
   if (!id) {
     console.error('Invalid user ID:', id);
@@ -210,46 +198,13 @@ app.post('/signout-user', checkAuth, async (req, res) => {
   }
 
   try {
-    // Log the current contents of the table for the given ID
-    const { data: preData, error: preError } = await supabase
-      .from('signins')
-      .select('*')
-      .eq('id', id);
-    
-    console.log('Current table contents for ID:', id, JSON.stringify(preData));
-    if (preError) {
-      throw preError;
-    }
-
-    // Execute the update query with formatted signOutTime
     const { data, error } = await supabase
       .from('signins')
-      .update({ signouttime: signOutTime })
+      .update({ signOutTime: new Date() })
       .eq('id', id);
-
-    // Log the query details
-    console.log('Supabase query executed with ID:', id);
-    console.log('Supabase response data:', JSON.stringify(data));
-    console.log('Supabase response error:', error);
 
     if (error) {
       throw error;
-    }
-
-    if (data.length === 0) {
-      console.error('No records updated. Possible invalid ID:', id);
-      return res.status(404).send('No records updated. Possible invalid ID.');
-    }
-
-    // Log the table contents after the update
-    const { data: postData, error: postError } = await supabase
-      .from('signins')
-      .select('*')
-      .eq('id', id);
-    
-    console.log('Table contents after update for ID:', id, JSON.stringify(postData));
-    if (postError) {
-      throw postError;
     }
 
     console.log('Updated signout time:', data);
