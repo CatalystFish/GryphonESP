@@ -30,11 +30,28 @@ app.post('/signin', async (req, res) => {
 
   if (data && data.length > 0) {
     console.log('Authentication successful');
-    res.redirect('/visitor-sign-in');
+    res.redirect('/choose-company');
   } else {
     console.log('Authentication failed');
     res.status(401).send('Unauthorized');
   }
+});
+
+// Serve choose company page
+app.get('/choose-company', (req, res) => {
+  console.log('Serving choose-company.html');
+  res.sendFile(path.join(__dirname, 'choose-company.html'), (err) => {
+    if (err) {
+      console.log('Error serving choose-company.html:', err);
+      res.status(404).send('File not found');
+    }
+  });
+});
+
+// Handle company selection
+app.post('/choose-company', (req, res) => {
+  const { company } = req.body;
+  res.redirect(`/visitor-sign-in?company=${company}`);
 });
 
 // Serve visitor sign-in page
@@ -50,10 +67,10 @@ app.get('/visitor-sign-in', (req, res) => {
 
 // Handle visitor sign-in form submission
 app.post('/visitor-signin', async (req, res) => {
-  const { firstName, lastName, company, additionalData } = req.body;
+  const { firstName, lastName, company, licensePlate, makeModel, testingCompleted } = req.body;
   const { data, error } = await supabase
     .from('signins')
-    .insert([{ firstName, lastName, company, additionalData, signInTime: new Date() }]);
+    .insert([{ firstName, lastName, company, licensePlate, makeModel, testingCompleted: !!testingCompleted, signInTime: new Date() }]);
 
   if (error) {
     console.error('Error inserting data:', error);
