@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const { createClient } = require('@supabase/supabase-js');
 const path = require('path');
+const session = require('express-session');
 require('dotenv').config(); // Load environment variables from .env
 
 // Initialize Supabase client
@@ -13,6 +14,23 @@ const app = express();
 
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname))); // Serve static files from the root
+
+// Configure session middleware
+app.use(session({
+  secret: 'your-secret-key',
+  resave: false,
+  saveUninitialized: true,
+  cookie: { secure: false } // Set to true in production with HTTPS
+}));
+
+// Middleware to check if the user is authenticated
+function checkAuth(req, res, next) {
+  if (req.session.isAuthenticated) {
+    return next();
+  } else {
+    res.redirect('/');
+  }
+}
 
 // Handle sign-in form submission
 app.post('/signin', async (req, res) => {
@@ -30,6 +48,7 @@ app.post('/signin', async (req, res) => {
 
   if (data && data.length > 0) {
     console.log('Authentication successful');
+    req.session.isAuthenticated = true;
     res.redirect('/choose-company');
   } else {
     console.log('Authentication failed');
@@ -38,7 +57,7 @@ app.post('/signin', async (req, res) => {
 });
 
 // Serve choose company page
-app.get('/choose-company', (req, res) => {
+app.get('/choose-company', checkAuth, (req, res) => {
   console.log('Serving choose-company.html');
   res.sendFile(path.join(__dirname, 'choose-company.html'), (err) => {
     if (err) {
@@ -49,13 +68,13 @@ app.get('/choose-company', (req, res) => {
 });
 
 // Handle company selection
-app.post('/choose-company', (req, res) => {
+app.post('/choose-company', checkAuth, (req, res) => {
   const { company } = req.body;
   res.redirect(`/visitor-sign-in?company=${company}`);
 });
 
 // Serve visitor sign-in page
-app.get('/visitor-sign-in', (req, res) => {
+app.get('/visitor-sign-in', checkAuth, (req, res) => {
   console.log('Serving visitor-sign-in.html');
   res.sendFile(path.join(__dirname, 'visitor-sign-in.html'), (err) => {
     if (err) {
@@ -66,7 +85,7 @@ app.get('/visitor-sign-in', (req, res) => {
 });
 
 // Handle visitor sign-in form submission
-app.post('/visitor-signin', async (req, res) => {
+app.post('/visitor-signin', checkAuth, async (req, res) => {
   const { firstName, lastName, company, licensePlate, makeModel, testingCompleted } = req.body;
   console.log('Received visitor sign-in request:', { firstName, lastName, company, licensePlate, makeModel, testingCompleted });
 
@@ -88,7 +107,7 @@ app.post('/visitor-signin', async (req, res) => {
 });
 
 // Serve post-sign-in page
-app.get('/post-sign-in', (req, res) => {
+app.get('/post-sign-in', checkAuth, (req, res) => {
   console.log('Serving post-sign-in.html');
   res.sendFile(path.join(__dirname, 'post-sign-in.html'), (err) => {
     if (err) {
@@ -99,7 +118,7 @@ app.get('/post-sign-in', (req, res) => {
 });
 
 // Serve view users page
-app.get('/view-users-page', (req, res) => {
+app.get('/view-users-page', checkAuth, (req, res) => {
   console.log('Serving view-users.html');
   res.sendFile(path.join(__dirname, 'view-users.html'), (err) => {
     if (err) {
@@ -110,7 +129,7 @@ app.get('/view-users-page', (req, res) => {
 });
 
 // Serve daily report page
-app.get('/daily-report-page', (req, res) => {
+app.get('/daily-report-page', checkAuth, (req, res) => {
   console.log('Serving daily-report.html');
   res.sendFile(path.join(__dirname, 'daily-report.html'), (err) => {
     if (err) {
@@ -120,33 +139,47 @@ app.get('/daily-report-page', (req, res) => {
   });
 });
 
-
-// Handle sign-out with one click
-app.post('/signout-user', async (req, res) => {
-  const { id } = req.body;
-  console.log('Received sign-out request:', { id });
-
+// Serve view all users data
+app.get('/view-users', checkAuth, async (req, res) => {
   try {
     const { data, error } = await supabase
       .from('signins')
-      .update({ signOutTime: new Date() })
-      .eq('id', id);
+      .select('*');
 
     if (error) {
       throw error;
     }
 
-    console.log('Updated signout time:', data);
-    res.redirect('/view-users');
+    res.json(data);
   } catch (error) {
-    console.error('Error updating signout time:', error);
-    res.status(500).send('Error updating signout time: ' + error.message);
+    console.error('Error retrieving users:', error);
+    res.status(500).send('Error retrieving users: ' + error.message);
   }
 });
 
+// Serve daily report data
+app.get('/daily-report', checkAuth, async (req, res) => {
+  const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+  try {
+    const { data, error } = await supabase
+      .from('signins')
+      .select('*')
+      .gte('signInTime', `${today}T00:00:00`)
+      .lt('signInTime', `${today}T23:59:59`);
 
-// Handle sign-out
-app.post('/signout', async (req, res) => {
+    if (error) {
+      throw error;
+    }
+
+    res.json(data);
+  } catch (error) {
+    console.error('Error generating daily report:', error);
+    res.status(500).send('Error generating daily report: ' + error.message);
+  }
+});
+
+// Handle sign-out with one click
+app.post('/signout-user', checkAuth, async (req, res) => {
   const { id } = req.body;
   console.log('Received sign-out request:', { id });
 
@@ -161,7 +194,7 @@ app.post('/signout', async (req, res) => {
     }
 
     console.log('Updated signout time:', data);
-    res.redirect('/visitor-sign-in');
+    res.redirect('/view-users-page');
   } catch (error) {
     console.error('Error updating signout time:', error);
     res.status(500).send('Error updating signout time: ' + error.message);
@@ -169,7 +202,7 @@ app.post('/signout', async (req, res) => {
 });
 
 // Handle report generation
-app.get('/report', async (req, res) => {
+app.get('/report', checkAuth, async (req, res) => {
   const { date } = req.query;
   console.log('Received report request for date:', date);
 
@@ -190,6 +223,18 @@ app.get('/report', async (req, res) => {
     res.status(500).send('Error generating report: ' + error.message);
   }
 });
+
+// Handle logout
+app.get('/logout', (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      return res.status(500).send('Could not log out.');
+    } else {
+      res.redirect('/');
+    }
+  });
+});
+
 
 // Start the server
 const port = process.env.PORT || 3000;
