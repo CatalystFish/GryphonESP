@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Daily Report</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <img src="logo.png" alt="Gryphon ESP Logo">
+    <nav>
+      <a href="#">Home</a>
+      <a href="#">About</a>
+      <a href="#">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <h2>Daily Report</h2>
+    <table id="report-table">
+      <thead>
+        <tr>
+          <th>First Name</th>
+          <th>Last Name</th>
+          <th>Company</th>
+          <th>License Plate</th>
+          <th>Make Model</th>
+          <th>Testing Completed</th>
+          <th>Sign In Time</th>
+          <th>Sign Out Time</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Report rows will be inserted here -->
+      </tbody>
+    </table>
+  </main>
+
+  <script>
+    async function fetchDailyReport() {
+      const response = await fetch('/daily-report');
+      const report = await response.json();
+      const reportTableBody = document.querySelector('#report-table tbody');
+
+      report.forEach(entry => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${entry.firstName}</td>
+          <td>${entry.lastName}</td>
+          <td>${entry.company}</td>
+          <td>${entry.licensePlate}</td>
+          <td>${entry.makeModel}</td>
+          <td>${entry.testingCompleted}</td>
+          <td>${new Date(entry.signInTime).toLocaleString()}</td>
+          <td>${entry.signOutTime ? new Date(entry.signOutTime).toLocaleString() : 'Still Signed In'}</td>
+        `;
+        reportTableBody.appendChild(row);
+      });
+    }
+
+    document.addEventListener('DOMContentLoaded', fetchDailyReport);
+  </script>
+</body>
+</html>
