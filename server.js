@@ -49,7 +49,14 @@ app.post('/signin', async (req, res) => {
   if (data && data.length > 0) {
     console.log('Authentication successful');
     req.session.isAuthenticated = true;
-    res.redirect('/choose-company');
+    req.session.save(err => {
+      if (err) {
+        console.error('Error saving session:', err);
+        res.status(500).send('Internal Server Error');
+      } else {
+        res.redirect('/choose-company');
+      }
+    });
   } else {
     console.log('Authentication failed');
     res.status(401).send('Unauthorized');
@@ -234,7 +241,6 @@ app.get('/logout', (req, res) => {
     }
   });
 });
-
 
 // Start the server
 const port = process.env.PORT || 3000;
