@@ -208,6 +208,7 @@ app.post('/signout-user', checkAuth, async (req, res) => {
   }
 });
 
+
 // Handle report generation
 app.get('/report', checkAuth, async (req, res) => {
   const { date } = req.query;
