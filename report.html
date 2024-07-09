@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Report</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <img src="logo.png" alt="Gryphon ESP Logo">
+    <nav>
+      <a href="#">Home</a>
+      <a href="#">About</a>
+      <a href="#">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <h2>Report</h2>
+    <form action="/report" method="get">
+      <label for="date">Date:</label>
+      <input type="date" id="date" name="date">
+      <button type="submit">Generate Report</button>
+    </form>
+    <div id="report-results"></div>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
