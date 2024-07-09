@@ -62,23 +62,22 @@
       });
     }
 
-async function signOutUser(id) {
-  console.log('Sign out user ID:', id); // Add this line for debugging
-  const response = await fetch('/signout-user', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({ id })
-  });
-  if (response.ok) {
-    alert('User signed out successfully');
-    location.reload();
-  } else {
-    alert('Error signing out user');
-  }
-}
-
+    async function signOutUser(id) {
+      console.log('Sign out user ID:', id); // Add this line for debugging
+      const response = await fetch('/signout-user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ id })
+      });
+      if (response.ok) {
+        alert('User signed out successfully');
+        location.reload();
+      } else {
+        alert('Error signing out user');
+      }
+    }
 
     document.addEventListener('DOMContentLoaded', fetchUsers);
   </script>
