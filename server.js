@@ -204,13 +204,13 @@ app.post('/signout-user', checkAuth, async (req, res) => {
       .update({ signOutTime: new Date() })
       .eq('id', id);
 
-    // Log the query details
-    console.log('Supabase query:', JSON.stringify(updateQuery, null, 2));
-
     // Execute the query
     const { data, error } = await updateQuery;
-
-    console.log('Supabase response:', { data, error });
+    
+    // Log the details
+    console.log('Supabase query executed with ID:', id);
+    console.log('Supabase response data:', JSON.stringify(data));
+    console.log('Supabase response error:', error);
 
     if (error) {
       throw error;
