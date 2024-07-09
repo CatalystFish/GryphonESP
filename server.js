@@ -200,7 +200,7 @@ app.post('/signout-user', checkAuth, async (req, res) => {
   try {
     const { data, error } = await supabase
       .from('signins')
-      .update({ signOutTime: new Date() })
+      .update({ signOutTime: new Date().toISOString() })
       .eq('id', id);
 
     if (error) {
@@ -229,7 +229,4 @@ app.get('/logout', (req, res) => {
 // Start the server
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
-  console.log(`Server running on http://localhost:${port}`);
-});
-
-module.exports = app;
+  console.log(`Server running on http://localhost:${
