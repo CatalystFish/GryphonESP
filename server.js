@@ -49,4 +49,66 @@ app.get('/visitor-sign-in', (req, res) => {
 });
 
 // Handle visitor sign-in form submission
-app.post('/visitor-signin',
+app.post('/visitor-signin', async (req, res) => {
+  const { firstName, lastName, company, additionalData } = req.body;
+  const { data, error } = await supabase
+    .from('signins')
+    .insert([{ firstName, lastName, company, additionalData, signInTime: new Date() }]);
+
+  if (error) {
+    console.error('Error inserting data:', error);
+    res.status(500).send(error.message);
+  } else {
+    res.redirect('/post-sign-in');
+  }
+});
+
+// Serve post-sign-in page
+app.get('/post-sign-in', (req, res) => {
+  console.log('Serving post-sign-in.html');
+  res.sendFile(path.join(__dirname, 'post-sign-in.html'), (err) => {
+    if (err) {
+      console.log('Error serving post-sign-in.html:', err);
+      res.status(404).send('File not found');
+    }
+  });
+});
+
+// Handle sign-out
+app.post('/signout', async (req, res) => {
+  const { id } = req.body;
+  const { data, error } = await supabase
+    .from('signins')
+    .update({ signOutTime: new Date() })
+    .eq('id', id);
+
+  if (error) {
+    res.status(500).send(error.message);
+  } else {
+    res.redirect('/visitor-sign-in');
+  }
+});
+
+// Handle report generation
+app.get('/report', async (req, res) => {
+  const { date } = req.query;
+
+  const { data, error } = await supabase
+    .from('signins')
+    .select('*')
+    .gte('signInTime', date ? new Date(date).toISOString() : new Date().toISOString());
+
+  if (error) {
+    res.status(500).send(error.message);
+  } else {
+    res.json(data);
+  }
+});
+
+// Start the server
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log(`Server running on http://localhost:${port}`);
+});
+
+module.exports = app;
