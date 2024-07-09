@@ -68,15 +68,22 @@ app.get('/visitor-sign-in', (req, res) => {
 // Handle visitor sign-in form submission
 app.post('/visitor-signin', async (req, res) => {
   const { firstName, lastName, company, licensePlate, makeModel, testingCompleted } = req.body;
-  const { data, error } = await supabase
-    .from('signins')
-    .insert([{ firstName, lastName, company, licensePlate, makeModel, testingCompleted: !!testingCompleted, signInTime: new Date() }]);
+  console.log('Received visitor sign-in request:', { firstName, lastName, company, licensePlate, makeModel, testingCompleted });
 
-  if (error) {
-    console.error('Error inserting data:', error);
-    res.status(500).send(error.message);
-  } else {
+  try {
+    const { data, error } = await supabase
+      .from('signins')
+      .insert([{ firstName, lastName, company, licensePlate, makeModel, testingCompleted: !!testingCompleted, signInTime: new Date() }]);
+
+    if (error) {
+      throw error;
+    }
+
+    console.log('Inserted data into signins:', data);
     res.redirect('/post-sign-in');
+  } catch (error) {
+    console.error('Error inserting data:', error);
+    res.status(500).send('Error inserting data: ' + error.message);
   }
 });
 
@@ -94,31 +101,46 @@ app.get('/post-sign-in', (req, res) => {
 // Handle sign-out
 app.post('/signout', async (req, res) => {
   const { id } = req.body;
-  const { data, error } = await supabase
-    .from('signins')
-    .update({ signOutTime: new Date() })
-    .eq('id', id);
+  console.log('Received sign-out request:', { id });
 
-  if (error) {
-    res.status(500).send(error.message);
-  } else {
+  try {
+    const { data, error } = await supabase
+      .from('signins')
+      .update({ signOutTime: new Date() })
+      .eq('id', id);
+
+    if (error) {
+      throw error;
+    }
+
+    console.log('Updated signout time:', data);
     res.redirect('/visitor-sign-in');
+  } catch (error) {
+    console.error('Error updating signout time:', error);
+    res.status(500).send('Error updating signout time: ' + error.message);
   }
 });
 
 // Handle report generation
 app.get('/report', async (req, res) => {
   const { date } = req.query;
+  console.log('Received report request for date:', date);
 
-  const { data, error } = await supabase
-    .from('signins')
-    .select('*')
-    .gte('signInTime', date ? new Date(date).toISOString() : new Date().toISOString());
+  try {
+    const { data, error } = await supabase
+      .from('signins')
+      .select('*')
+      .gte('signInTime', date ? new Date(date).toISOString() : new Date().toISOString());
 
-  if (error) {
-    res.status(500).send(error.message);
-  } else {
+    if (error) {
+      throw error;
+    }
+
+    console.log('Report data:', data);
     res.json(data);
+  } catch (error) {
+    console.error('Error generating report:', error);
+    res.status(500).send('Error generating report: ' + error.message);
   }
 });
 
