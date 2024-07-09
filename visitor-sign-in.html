@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Visitor Sign-In</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <img src="logo.png" alt="Gryphon ESP Logo">
+    <nav>
+      <a href="#">Home</a>
+      <a href="#">About</a>
+      <a href="#">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <h2>Visitor Sign-In</h2>
+    <form id="visitor-sign-in-form" action="/visitor-signin" method="POST">
+      <label for="firstName">First Name</label>
+      <input type="text" id="firstName" name="firstName" required>
+
+      <label for="lastName">Last Name</label>
+      <input type="text" id="lastName" name="lastName" required>
+
+      <label for="company">Company</label>
+      <select id="company" name="company" required>
+        <option value="Repsol">Repsol</option>
+        <option value="Rosewood">Rosewood</option>
+        <option value="Crimson">Crimson</option>
+        <option value="XTO">XTO</option>
+        <option value="BPX">BPX</option>
+        <option value="Javelin">Javelin</option>
+        <option value="Xarvona">Xarvona</option>
+      </select>
+
+      <label for="additionalData">Additional Data</label>
+      <input type="text" id="additionalData" name="additionalData">
+
+      <button type="submit">Sign In Visitor</button>
+    </form>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
