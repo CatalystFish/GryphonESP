@@ -48,6 +48,37 @@ app.get('/post-sign-in', (req, res) => {
   });
 });
 
+// Handle sign-out
+app.post('/signout', async (req, res) => {
+  const { id } = req.body;
+  const { data, error } = await supabase
+    .from('signins')
+    .update({ signOutTime: new Date() })
+    .eq('id', id);
+
+  if (error) {
+    res.status(500).send(error.message);
+  } else {
+    res.redirect('/post-sign-in');
+  }
+});
+
+// Handle report generation
+app.get('/report', async (req, res) => {
+  const { date } = req.query;
+
+  const { data, error } = await supabase
+    .from('signins')
+    .select('*')
+    .gte('signInTime', date ? new Date(date).toISOString() : new Date().toISOString());
+
+  if (error) {
+    res.status(500).send(error.message);
+  } else {
+    res.json(data);
+  }
+});
+
 // Start the server
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
