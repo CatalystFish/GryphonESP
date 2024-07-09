@@ -11,13 +11,9 @@
       <a href="/choose-company">Home</a>
       <a href="/about">About</a>
       <a href="/contact">Contact</a>
-      <% if (session.isAuthenticated) { %>
-        <a href="/view-users-page">View Users</a>
-        <a href="/daily-report-page">Daily Report</a>
-        <a href="/logout">Logout</a>
-      <% } else { %>
-        <a href="/login">Login</a>
-      <% } %>
+      <a href="/view-users-page">View Users</a>
+      <a href="/daily-report-page">Daily Report</a>
+      <a href="/logout">Logout</a>
     </nav>
   </header>
   <main>
