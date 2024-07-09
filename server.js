@@ -13,6 +13,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 const app = express();
 
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json()); // Ensure JSON parsing middleware is added
 app.use(express.static(path.join(__dirname))); // Serve static files from the root
 
 // Configure session middleware
@@ -25,6 +26,7 @@ app.use(session({
 
 // Middleware to check if the user is authenticated
 function checkAuth(req, res, next) {
+  console.log('Session Data:', req.session);
   if (req.session.isAuthenticated) {
     return next();
   } else {
@@ -210,29 +212,6 @@ app.post('/signout-user', checkAuth, async (req, res) => {
   } catch (error) {
     console.error('Error updating signout time:', error);
     res.status(500).send('Error updating signout time: ' + error.message);
-  }
-});
-
-// Handle report generation
-app.get('/report', checkAuth, async (req, res) => {
-  const { date } = req.query;
-  console.log('Received report request for date:', date);
-
-  try {
-    const { data, error } = await supabase
-      .from('signins')
-      .select('*')
-      .gte('signInTime', date ? new Date(date).toISOString() : new Date().toISOString());
-
-    if (error) {
-      throw error;
-    }
-
-    console.log('Report data:', data);
-    res.json(data);
-  } catch (error) {
-    console.error('Error generating report:', error);
-    res.status(500).send('Error generating report: ' + error.message);
   }
 });
 
