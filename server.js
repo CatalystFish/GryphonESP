@@ -190,6 +190,11 @@ app.post('/signout-user', checkAuth, async (req, res) => {
   const { id } = req.body;
   console.log('Received sign-out request:', { id });
 
+  if (!id) {
+    console.error('Invalid user ID:', id);
+    return res.status(400).send('Invalid user ID');
+  }
+
   try {
     const { data, error } = await supabase
       .from('signins')
@@ -207,7 +212,6 @@ app.post('/signout-user', checkAuth, async (req, res) => {
     res.status(500).send('Error updating signout time: ' + error.message);
   }
 });
-
 
 // Handle report generation
 app.get('/report', checkAuth, async (req, res) => {
