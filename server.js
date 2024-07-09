@@ -30,59 +30,23 @@ app.post('/signin', async (req, res) => {
 
   if (data && data.length > 0) {
     console.log('Authentication successful');
-    res.redirect('/post-sign-in');
+    res.redirect('/visitor-sign-in');
   } else {
     console.log('Authentication failed');
     res.status(401).send('Unauthorized');
   }
 });
 
-// Serve post-sign-in page
-app.get('/post-sign-in', (req, res) => {
-  console.log('Serving post-sign-in.html');
-  res.sendFile(path.join(__dirname, 'post-sign-in.html'), (err) => {
+// Serve visitor sign-in page
+app.get('/visitor-sign-in', (req, res) => {
+  console.log('Serving visitor-sign-in.html');
+  res.sendFile(path.join(__dirname, 'visitor-sign-in.html'), (err) => {
     if (err) {
-      console.log('Error serving post-sign-in.html:', err);
+      console.log('Error serving visitor-sign-in.html:', err);
       res.status(404).send('File not found');
     }
   });
 });
 
-// Handle sign-out
-app.post('/signout', async (req, res) => {
-  const { id } = req.body;
-  const { data, error } = await supabase
-    .from('signins')
-    .update({ signOutTime: new Date() })
-    .eq('id', id);
-
-  if (error) {
-    res.status(500).send(error.message);
-  } else {
-    res.redirect('/post-sign-in');
-  }
-});
-
-// Handle report generation
-app.get('/report', async (req, res) => {
-  const { date } = req.query;
-
-  const { data, error } = await supabase
-    .from('signins')
-    .select('*')
-    .gte('signInTime', date ? new Date(date).toISOString() : new Date().toISOString());
-
-  if (error) {
-    res.status(500).send(error.message);
-  } else {
-    res.json(data);
-  }
-});
-
-// Start the server
-const port = process.env.PORT || 3000;
-app.listen(port, () => {
-  console.log(`Server running on http://localhost:${port}`);
-});
-
-module.exports = app;
+// Handle visitor sign-in form submission
+app.post('/visitor-signin',
