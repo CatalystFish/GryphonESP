@@ -198,6 +198,27 @@ app.post('/signout-user', checkAuth, async (req, res) => {
   }
 
   try {
+    // Log all entries in the signins table
+    const { data: allData, error: allError } = await supabase
+      .from('signins')
+      .select('*');
+    
+    console.log('All entries in signins table:', JSON.stringify(allData));
+    if (allError) {
+      throw allError;
+    }
+
+    // Log the current contents of the table for the given ID
+    const { data: preData, error: preError } = await supabase
+      .from('signins')
+      .select('*')
+      .eq('id', id);
+    
+    console.log('Current table contents for ID:', id, JSON.stringify(preData));
+    if (preError) {
+      throw preError;
+    }
+
     // Create the query
     const updateQuery = supabase
       .from('signins')
@@ -207,7 +228,7 @@ app.post('/signout-user', checkAuth, async (req, res) => {
     // Execute the query
     const { data, error } = await updateQuery;
     
-    // Log the details
+    // Log the query details
     console.log('Supabase query executed with ID:', id);
     console.log('Supabase response data:', JSON.stringify(data));
     console.log('Supabase response error:', error);
@@ -221,23 +242,23 @@ app.post('/signout-user', checkAuth, async (req, res) => {
       return res.status(404).send('No records updated. Possible invalid ID.');
     }
 
+    // Log the table contents after the update
+    const { data: postData, error: postError } = await supabase
+      .from('signins')
+      .select('*')
+      .eq('id', id);
+    
+    console.log('Table contents after update for ID:', id, JSON.stringify(postData));
+    if (postError) {
+      throw postError;
+    }
+
     console.log('Updated signout time:', data);
     res.redirect('/view-users-page');
   } catch (error) {
     console.error('Error updating signout time:', error);
     res.status(500).send('Error updating signout time: ' + error.message);
   }
-});
-
-// Handle logout
-app.get('/logout', (req, res) => {
-  req.session.destroy((err) => {
-    if (err) {
-      return res.status(500).send('Could not log out.');
-    } else {
-      res.redirect('/');
-    }
-  });
 });
 
 // Start the server
