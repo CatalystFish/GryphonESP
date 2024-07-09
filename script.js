@@ -1,32 +1,38 @@
-document.getElementById('company-selection').addEventListener('change', function() {
-  const company = this.value;
+document.addEventListener('DOMContentLoaded', () => {
+  const companySelect = document.getElementById('company');
   const additionalFields = document.getElementById('additional-fields');
-  
-  // Clear previous fields
-  additionalFields.innerHTML = '';
-  
-  // Add fields based on company
-  if (company === 'Repsol') {
-    additionalFields.innerHTML = `
-      <label for="license-plate">License Plate</label>
-      <input type="text" id="license-plate" name="license-plate" required>
-    `;
-  } else if (company === 'Rosewood') {
-    additionalFields.innerHTML = `
-      <label for="license-plate">License Plate</label>
-      <input type="text" id="license-plate" name="license-plate" required>
-      <label for="vehicle-make">Vehicle Make</label>
-      <input type="text" id="vehicle-make" name="vehicle-make" required>
-      <label for="vehicle-model">Vehicle Model</label>
-      <input type="text" id="vehicle-model" name="vehicle-model" required>
-    `;
-  } else if (company === 'Crimson') {
-    additionalFields.innerHTML = `
-      <label for="license-plate">License Plate</label>
-      <input type="text" id="license-plate" name="license-plate" required>
-      <label for="testing-completed">Testing Completed</label>
-      <input type="checkbox" id="testing-completed" name="testing-completed">
-    `;
-  }
-  // Add more conditions for other companies as needed
+
+  companySelect.addEventListener('change', (event) => {
+    const company = event.target.value;
+    additionalFields.innerHTML = ''; // Clear previous fields
+
+    switch (company) {
+      case 'Repsol':
+        additionalFields.innerHTML = '<label for="licensePlate">License Plate</label><input type="text" id="licensePlate" name="licensePlate" required>';
+        break;
+      case 'Rosewood':
+        additionalFields.innerHTML = `
+          <label for="licensePlate">License Plate</label>
+          <input type="text" id="licensePlate" name="licensePlate" required>
+          <label for="makeModel">Make and Model</label>
+          <input type="text" id="makeModel" name="makeModel" required>
+        `;
+        break;
+      case 'Crimson':
+        additionalFields.innerHTML = `
+          <label for="licensePlate">License Plate</label>
+          <input type="text" id="licensePlate" name="licensePlate" required>
+          <label for="testingCompleted">Testing Completed</label>
+          <input type="checkbox" id="testingCompleted" name="testingCompleted">
+        `;
+        break;
+      // Add cases for other companies as needed
+      default:
+        break;
+    }
+  });
+
+  // Trigger change event to load fields for the initial selection
+  const event = new Event('change');
+  companySelect.dispatchEvent(event);
 });
