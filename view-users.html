@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>View Users</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <img src="logo.png" alt="Gryphon ESP Logo">
+    <nav>
+      <a href="#">Home</a>
+      <a href="#">About</a>
+      <a href="#">Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <h2>All Users</h2>
+    <table id="users-table">
+      <thead>
+        <tr>
+          <th>First Name</th>
+          <th>Last Name</th>
+          <th>Company</th>
+          <th>License Plate</th>
+          <th>Make Model</th>
+          <th>Testing Completed</th>
+          <th>Sign In Time</th>
+          <th>Sign Out Time</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- User rows will be inserted here -->
+      </tbody>
+    </table>
+  </main>
+
+  <script>
+    async function fetchUsers() {
+      const response = await fetch('/view-users');
+      const users = await response.json();
+      const usersTableBody = document.querySelector('#users-table tbody');
+
+      users.forEach(user => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${user.firstName}</td>
+          <td>${user.lastName}</td>
+          <td>${user.company}</td>
+          <td>${user.licensePlate}</td>
+          <td>${user.makeModel}</td>
+          <td>${user.testingCompleted}</td>
+          <td>${new Date(user.signInTime).toLocaleString()}</td>
+          <td>${user.signOutTime ? new Date(user.signOutTime).toLocaleString() : 'Still Signed In'}</td>
+          <td><button onclick="signOutUser(${user.id})">Sign Out</button></td>
+        `;
+        usersTableBody.appendChild(row);
+      });
+    }
+
+    async function signOutUser(id) {
+      const response = await fetch('/signout-user', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ id })
+      });
+      if (response.ok) {
+        alert('User signed out successfully');
+        location.reload();
+      } else {
+        alert('Error signing out user');
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', fetchUsers);
+  </script>
+</body>
+</html>
