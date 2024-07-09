@@ -34,6 +34,16 @@ function checkAuth(req, res, next) {
   }
 }
 
+// Serve about page
+app.get('/about', (req, res) => {
+  res.sendFile(path.join(__dirname, 'about.html'));
+});
+
+// Serve contact page
+app.get('/contact', (req, res) => {
+  res.sendFile(path.join(__dirname, 'contact.html'));
+});
+
 // Handle sign-in form submission
 app.post('/signin', async (req, res) => {
   const { username, password } = req.body;
@@ -190,9 +200,9 @@ app.get('/daily-report', checkAuth, async (req, res) => {
 // Handle sign-out with one click
 app.post('/signout-user', checkAuth, async (req, res) => {
   const { id } = req.body;
-  const signouttime = new Date().toISOString();
+  const signOutTime = new Date().toISOString();
   console.log('Received sign-out request:', { id });
-  console.log('Formatted signouttime:', signouttime);
+  console.log('Formatted signOutTime:', signOutTime);
 
   if (!id) {
     console.error('Invalid user ID:', id);
@@ -211,10 +221,10 @@ app.post('/signout-user', checkAuth, async (req, res) => {
       throw preError;
     }
 
-    // Execute the update query with formatted signouttime
+    // Execute the update query with formatted signOutTime
     const { data, error } = await supabase
       .from('signins')
-      .update({ signouttime })
+      .update({ signouttime: signOutTime })
       .eq('id', id);
 
     // Log the query details
@@ -248,6 +258,17 @@ app.post('/signout-user', checkAuth, async (req, res) => {
     console.error('Error updating signout time:', error);
     res.status(500).send('Error updating signout time: ' + error.message);
   }
+});
+
+// Handle logout
+app.get('/logout', (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      return res.status(500).send('Could not log out.');
+    } else {
+      res.redirect('/');
+    }
+  });
 });
 
 // Start the server
