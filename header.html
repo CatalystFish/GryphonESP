@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <img src="logo.png" alt="Gryphon ESP Logo">
+    <nav>
+      <a href="/choose-company">Home</a>
+      <a href="/about">About</a>
+      <a href="/contact">Contact</a>
+      <% if (session.isAuthenticated) { %>
+        <a href="/view-users-page">View Users</a>
+        <a href="/daily-report-page">Daily Report</a>
+        <a href="/logout">Logout</a>
+      <% } else { %>
+        <a href="/login">Login</a>
+      <% } %>
+    </nav>
+  </header>
+  <main>
+    <!-- Page content goes here -->
+  </main>
+</body>
+</html>
