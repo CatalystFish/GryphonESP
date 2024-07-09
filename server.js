@@ -190,9 +190,9 @@ app.get('/daily-report', checkAuth, async (req, res) => {
 // Handle sign-out with one click
 app.post('/signout-user', checkAuth, async (req, res) => {
   const { id } = req.body;
-  const signOutTime = new Date().toISOString();
+  const signouttime = new Date().toISOString();
   console.log('Received sign-out request:', { id });
-  console.log('Formatted signOutTime:', signOutTime);
+  console.log('Formatted signouttime:', signouttime);
 
   if (!id) {
     console.error('Invalid user ID:', id);
@@ -211,10 +211,10 @@ app.post('/signout-user', checkAuth, async (req, res) => {
       throw preError;
     }
 
-    // Execute the update query with formatted signOutTime
+    // Execute the update query with formatted signouttime
     const { data, error } = await supabase
       .from('signins')
-      .update({ signOutTime })
+      .update({ signouttime })
       .eq('id', id);
 
     // Log the query details
