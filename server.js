@@ -203,8 +203,15 @@ app.post('/signout-user', checkAuth, async (req, res) => {
       .update({ signOutTime: new Date().toISOString() })
       .eq('id', id);
 
+    console.log('Supabase response:', { data, error });
+
     if (error) {
       throw error;
+    }
+
+    if (data.length === 0) {
+      console.error('No records updated. Possible invalid ID:', id);
+      return res.status(404).send('No records updated. Possible invalid ID.');
     }
 
     console.log('Updated signout time:', data);
