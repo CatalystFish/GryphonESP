@@ -198,11 +198,14 @@ app.post('/signout-user', checkAuth, async (req, res) => {
   }
 
   try {
-    const { data, error } = await supabase
+    const updateQuery = supabase
       .from('signins')
       .update({ signOutTime: new Date().toISOString() })
       .eq('id', id);
+    
+    const { data, error } = await updateQuery;
 
+    console.log('Supabase query:', updateQuery.toString());
     console.log('Supabase response:', { data, error });
 
     if (error) {
