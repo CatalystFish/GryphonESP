@@ -148,6 +148,16 @@ app.get('/daily-report-page', checkAuth, (req, res) => {
   });
 });
 
+// Serve about page
+app.get('/about', (req, res) => {
+  res.sendFile(path.join(__dirname, 'about.html'));
+});
+
+// Serve contact page
+app.get('/contact', (req, res) => {
+  res.sendFile(path.join(__dirname, 'contact.html'));
+});
+
 // Serve view all users data
 app.get('/view-users', checkAuth, async (req, res) => {
   try {
@@ -200,7 +210,7 @@ app.post('/signout-user', checkAuth, async (req, res) => {
   try {
     const { data, error } = await supabase
       .from('signins')
-      .update({ signOutTime: new Date() })
+      .update({ signOutTime: new Date().toISOString() })
       .eq('id', id);
 
     if (error) {
