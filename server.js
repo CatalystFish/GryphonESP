@@ -190,7 +190,9 @@ app.get('/daily-report', checkAuth, async (req, res) => {
 // Handle sign-out with one click
 app.post('/signout-user', checkAuth, async (req, res) => {
   const { id } = req.body;
+  const signOutTime = new Date();
   console.log('Received sign-out request:', { id });
+  console.log('Formatted signOutTime:', signOutTime);
 
   if (!id) {
     console.error('Invalid user ID:', id);
@@ -198,16 +200,6 @@ app.post('/signout-user', checkAuth, async (req, res) => {
   }
 
   try {
-    // Log all entries in the signins table
-    const { data: allData, error: allError } = await supabase
-      .from('signins')
-      .select('*');
-    
-    console.log('All entries in signins table:', JSON.stringify(allData));
-    if (allError) {
-      throw allError;
-    }
-
     // Log the current contents of the table for the given ID
     const { data: preData, error: preError } = await supabase
       .from('signins')
@@ -219,15 +211,12 @@ app.post('/signout-user', checkAuth, async (req, res) => {
       throw preError;
     }
 
-    // Create the query
-    const updateQuery = supabase
+    // Execute the update query
+    const { data, error } = await supabase
       .from('signins')
-      .update({ signOutTime: new Date() })
+      .update({ signOutTime })
       .eq('id', id);
 
-    // Execute the query
-    const { data, error } = await updateQuery;
-    
     // Log the query details
     console.log('Supabase query executed with ID:', id);
     console.log('Supabase response data:', JSON.stringify(data));
